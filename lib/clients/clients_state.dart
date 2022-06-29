@@ -8,15 +8,11 @@ abstract class ClientState {
 }
 
 class ClientInitialState extends ClientState {
-  @override
-  List<Client>? clients = [];
-  ClientInitialState({required this.clients}) : super(clients);
+  ClientInitialState() : super([]);
 }
 
 class ClientSucessState extends ClientState {
-  @override
-  List<Client>? clients;
-  ClientSucessState({required this.clients}) : super();
+  ClientSucessState({required List<Client> clients}) : super(clients);
 }
 
 class ClientErrorState extends ClientState {

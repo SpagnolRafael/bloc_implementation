@@ -30,6 +30,18 @@ class _ClientPageState extends State<ClientPage> {
     super.dispose();
   }
 
+  // showDialog(
+  //                     context: context,
+  //                     builder: (context) {
+  //                       return const SizedBox(
+  //                         width: 150,
+  //                         height: 150,
+  //                         child: AlertDialog(
+  //                           content: Text("Nome superior a 5 caracteres"),
+  //                         ),
+  //                       );
+  //                     }),
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,33 +117,33 @@ class _ClientPageState extends State<ClientPage> {
           )
         ],
       ),
-      body: BlocBuilder<ClientBloc, ClientState>(
+      body: BlocConsumer<ClientBloc, ClientState>(
         bloc: bloc,
+        listener: (context, state) {
+          if (state is ClientErrorState) {
+            const snackBar =
+                SnackBar(content: Text("Erro: Nome maior que 5 caracteres"));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
         builder: (context, state) {
-          return StreamBuilder<ClientState>(
-            stream: bloc.stream,
-            builder: (context, AsyncSnapshot<ClientState> snapshot) {
-              if (state is ClientErrorState) {
-                return const Center(child: Text("Erro ao carregar lista"));
-              } else if (state is ClientLoadingState) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final clientList = snapshot.data?.clients ?? [];
-              return ListView.separated(
-                itemBuilder: (context, index) => ListTile(
-                  title: Text(clientList[index].name),
-                  subtitle: Text(clientList[index].cpf),
-                  trailing: IconButton(
-                    onPressed: () {
-                      bloc.add(RemoveClientEvent(client: clientList[index]));
-                    },
-                    icon: const Icon(Icons.delete),
-                  ),
-                ),
-                separatorBuilder: (_, __) => const Divider(),
-                itemCount: clientList.length,
-              );
-            },
+          if (state is ClientLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final clientList = state.clients ?? [];
+          return ListView.separated(
+            itemBuilder: (context, index) => ListTile(
+              title: Text(clientList[index].name),
+              subtitle: Text(clientList[index].cpf),
+              trailing: IconButton(
+                onPressed: () {
+                  bloc.add(RemoveClientEvent(client: clientList[index]));
+                },
+                icon: const Icon(Icons.delete),
+              ),
+            ),
+            separatorBuilder: (_, __) => const Divider(),
+            itemCount: clientList.length,
           );
         },
       ),

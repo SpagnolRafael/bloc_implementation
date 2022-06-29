@@ -56,57 +56,59 @@ class _ClientPageState extends State<ClientPage> {
                   isScrollControlled: true,
                   context: context,
                   builder: (context) {
-                    return Container(
-                      color: Colors.grey.shade400,
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _nomeController,
-                              decoration: const InputDecoration(
-                                  hintText: "Nome",
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 3,
-                                    ),
-                                  )),
+                    return SingleChildScrollView(
+                      child: Container(
+                        color: Colors.grey.shade400,
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: _nomeController,
+                                decoration: const InputDecoration(
+                                    hintText: "Nome",
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.black,
+                                        width: 3,
+                                      ),
+                                    )),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _cpfController,
-                              decoration: const InputDecoration(
-                                  hintText: "Cpf",
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 3,
-                                    ),
-                                  )),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: _cpfController,
+                                decoration: const InputDecoration(
+                                    hintText: "Cpf",
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.black,
+                                        width: 3,
+                                      ),
+                                    )),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                bloc.add(AddClientEvent(
-                                  client: Client(
-                                      name: _nomeController.text,
-                                      cpf: _cpfController.text),
-                                ));
-                                _nomeController.text = "";
-                                _cpfController.text = "";
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Adicionar"),
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  bloc.add(AddClientEvent(
+                                    client: Client(
+                                        name: _nomeController.text,
+                                        cpf: _cpfController.text),
+                                  ));
+                                  _nomeController.text = "";
+                                  _cpfController.text = "";
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Adicionar"),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },

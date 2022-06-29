@@ -87,6 +87,9 @@ class _ClientPageState extends State<ClientPage> {
                                       name: _nomeController.text,
                                       cpf: _cpfController.text),
                                 ));
+                                _nomeController.text = "";
+                                _cpfController.text = "";
+                                Navigator.pop(context);
                               },
                               child: const Text("Adicionar"),
                             ),
@@ -102,13 +105,17 @@ class _ClientPageState extends State<ClientPage> {
           )
         ],
       ),
-      body: BlocConsumer<ClientBloc, ClientState>(
+      body: BlocBuilder<ClientBloc, ClientState>(
         bloc: bloc,
-        listener: (context, state) {},
         builder: (context, state) {
           return StreamBuilder<ClientState>(
             stream: bloc.stream,
             builder: (context, AsyncSnapshot<ClientState> snapshot) {
+              if (state is ClientErrorState) {
+                return const Center(child: Text("Erro ao carregar lista"));
+              } else if (state is ClientLoadingState) {
+                return const Center(child: CircularProgressIndicator());
+              }
               final clientList = snapshot.data?.clients ?? [];
               return ListView.separated(
                 itemBuilder: (context, index) => ListTile(

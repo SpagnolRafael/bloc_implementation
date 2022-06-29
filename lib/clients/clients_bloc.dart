@@ -8,8 +8,14 @@ class ClientBloc extends Bloc<ClientEvent, ClientState> {
   final _repository = ClientRepository();
   ClientBloc() : super(ClientInitialState(clients: [])) {
     on<LoadClientEvent>(
-      (event, emit) {
-        emit(ClientSucessState(clients: _repository.load()));
+      (event, emit) async {
+        if (_repository.load().isNotEmpty) {
+          emit(ClientLoadingState());
+          await Future.delayed(const Duration(seconds: 3));
+          emit(ClientSucessState(clients: _repository.load()));
+        } else {
+          emit(ClientErrorState());
+        }
       },
     );
     on<AddClientEvent>(

@@ -20,7 +20,7 @@ class ClientSucessState extends ClientState {
 }
 
 class ClientErrorState extends ClientState {
-  ClientErrorState(String errorMessage) : super();
+  ClientErrorState() : super();
 }
 
 class ClientLoadingState extends ClientState {}

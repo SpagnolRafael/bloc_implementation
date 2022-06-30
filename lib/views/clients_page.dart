@@ -1,8 +1,7 @@
 import 'package:bloc_repository/clients/clients.dart';
-import 'package:bloc_repository/clients/clients_repository.dart';
+import 'package:bloc_repository/clients/clients_bloc.dart';
+import 'package:bloc_repository/clients/clients_events.dart';
 import 'package:bloc_repository/clients/clients_state.dart';
-import 'package:bloc_repository/cubits/client_cubit_states.dart';
-import 'package:bloc_repository/cubits/cliente_cubits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,28 +13,34 @@ class ClientPage extends StatefulWidget {
 }
 
 class _ClientPageState extends State<ClientPage> {
-  // late final ClientBloc bloc;
-  late final ClientCubit cubit;
-  final ClientRepository repository = ClientRepository();
+  late final ClientBloc bloc;
   late final TextEditingController _nomeController = TextEditingController();
   late final TextEditingController _cpfController = TextEditingController();
-  List<Client> clientList = [];
 
   @override
   void initState() {
     super.initState();
-    //bloc = ClientBloc();
-    //bloc.add(LoadClientEvent());
-    cubit = ClientCubit(repository: repository);
-    cubit.getClientsFromRepository();
+    bloc = ClientBloc();
+    bloc.add(LoadClientEvent());
   }
 
   @override
   void dispose() {
-    //bloc.close();
-    cubit.close();
+    bloc.close();
     super.dispose();
   }
+
+  // showDialog(
+  //                     context: context,
+  //                     builder: (context) {
+  //                       return const SizedBox(
+  //                         width: 150,
+  //                         height: 150,
+  //                         child: AlertDialog(
+  //                           content: Text("Nome superior a 5 caracteres"),
+  //                         ),
+  //                       );
+  //                     }),
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +95,11 @@ class _ClientPageState extends State<ClientPage> {
                               padding: const EdgeInsets.all(20.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  // bloc.add(AddClientEvent(
-                                  //   client: Client(
-                                  //       name: _nomeController.text,
-                                  //       cpf: _cpfController.text),
-                                  // ));
-                                  cubit.addClientsToRepository(
-                                    Client(
+                                  bloc.add(AddClientEvent(
+                                    client: Client(
                                         name: _nomeController.text,
                                         cpf: _cpfController.text),
-                                  );
+                                  ));
                                   _nomeController.text = "";
                                   _cpfController.text = "";
                                   Navigator.pop(context);
@@ -119,29 +119,27 @@ class _ClientPageState extends State<ClientPage> {
           )
         ],
       ),
-      body: BlocConsumer<ClientCubit, ClientCubitState>(
-        bloc: cubit,
+      body: BlocConsumer<ClientBloc, ClientState>(
+        bloc: bloc,
         listener: (context, state) {
-          if (state is ClientCubitErrorState) {
+          if (state is ClientErrorState) {
             const snackBar =
                 SnackBar(content: Text("Erro: Nome maior que 5 caracteres"));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
         builder: (context, state) {
-          if (state is ClientCubitLoadingState) {
+          if (state is ClientLoadingState) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ClientCubitSucessState) {
-            clientList = state.clients;
           }
+          final clientList = state.clients ?? [];
           return ListView.separated(
             itemBuilder: (context, index) => ListTile(
               title: Text(clientList[index].name),
               subtitle: Text(clientList[index].cpf),
               trailing: IconButton(
                 onPressed: () {
-                  // bloc.add(RemoveClientEvent(client: clientList[index]));
-                  cubit.removeClientsFromRepository(client: clientList[index]);
+                  bloc.add(RemoveClientEvent(client: clientList[index]));
                 },
                 icon: const Icon(Icons.delete),
               ),
